@@ -10,7 +10,8 @@ const CUSTOM_HEADER_KEY_INPUT_CLASS = "custom-header-key-input";
 const CUSTOM_HEADER_VALUE_INPUT_CLASS = "custom-header-value-input";
 const SAFETY_SETTING_ITEM_CLASS = "safety-setting-item";
 const SHOW_CLASS = "show"; // For modals
-const API_KEY_REGEX = /AIzaSy\S{33}/g;
+// 同时匹配两种密钥
+const API_KEY_REGEX = /(AIzaSy\S{33}|AQ\.[a-zA-Z0-9_\-]{50})/g;
 const PROXY_REGEX =
   /(?:https?|socks5):\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?(?:[^:\/\s]+)(?::\d+)?/g;
 const VERTEX_API_KEY_REGEX = /AQ\.[a-zA-Z0-9_\-]{50}/g; // 新增 Vertex Express API Key 正则
