@@ -81,15 +81,8 @@ def _clean_json_schema_properties(obj: Any) -> Any:
         "$id",
         "$ref",
         "$comment",
-        "$defs",
-        "$anchor",
         "readOnly",
         "writeOnly",
-        "additionalProperties",
-        "unevaluatedProperties",
-        "propertyNames",
-        "patternProperties",
-        "strict",
     }
 
     cleaned = {}
@@ -126,38 +119,23 @@ def _build_tools(model: str, payload: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     def _merge_tools(tools: List[Dict[str, Any]]) -> Dict[str, Any]:
         record = dict()
-
-        def _add_function_declarations(functions: List[Any]):
-            declarations = record.get("functionDeclarations", [])
-            for func in functions:
-                if isinstance(func, dict):
-                    cleaned_func = _clean_json_schema_properties(func)
-                    parameters = cleaned_func.get("parameters")
-                    if (
-                        isinstance(parameters, dict)
-                        and parameters.get("type") == "object"
-                        and not parameters.get("properties")
-                    ):
-                        cleaned_func.pop("parameters", None)
-                    declarations.append(cleaned_func)
-                else:
-                    declarations.append(func)
-            record["functionDeclarations"] = declarations
-
         for item in tools:
             if not item or not isinstance(item, dict):
                 continue
 
-            # 兼容 OpenAI 格式的工具定义：{"type": "function", "function": {...}}
-            if item.get("type") == "function" and isinstance(
-                item.get("function"), dict
-            ):
-                _add_function_declarations([item["function"]])
-                continue
-
             for k, v in item.items():
                 if k == "functionDeclarations" and v and isinstance(v, list):
-                    _add_function_declarations(v)
+                    functions = record.get("functionDeclarations", [])
+                    # 清理每个函数声明中的不支持字段
+                    cleaned_functions = []
+                    for func in v:
+                        if isinstance(func, dict):
+                            cleaned_func = _clean_json_schema_properties(func)
+                            cleaned_functions.append(cleaned_func)
+                        else:
+                            cleaned_functions.append(func)
+                    functions.extend(cleaned_functions)
+                    record["functionDeclarations"] = functions
                 else:
                     record[k] = v
         return record

@@ -55,15 +55,8 @@ def _clean_json_schema_properties(obj: Any) -> Any:
         "$id",
         "$ref",
         "$comment",
-        "$defs",
-        "$anchor",
         "readOnly",
         "writeOnly",
-        "additionalProperties",
-        "unevaluatedProperties",
-        "propertyNames",
-        "patternProperties",
-        "strict",
     }
 
     cleaned = {}
